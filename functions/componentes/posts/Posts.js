@@ -20,8 +20,39 @@ class Posts {
     const idPost = path.basename(rutaArchivo).split('.')[0]
     const bucket = admin.storage.bucket()
     const tmpRutaArchivo = path.join(os.tmpdir(), nombreArchivo)
-  }
 
+    const cliente  = new vision.Image.ImageAnnotatorClient()
+
+    return bucket
+      .file(rutaArchivo)
+      .download({
+        destination : tmpRutaArchivo
+      })
+      .then(() => {
+        return cliente.safeSearchDetection(tmpRutaArchivo)
+      })
+      .then(resultado => {
+        const adulto = resultado[0].safeSearchAnnotation.adult
+        const violence = resultado[0].safeSearchAnnotation.violence
+        const medical = resultado[0].safeSearchAnnotation.medical
+        
+        return (
+          this.esAdecuada(adulto) &&
+          this.esAdecuada(medical) &&
+          this.esAdecuada(violence)
+        )
+      })
+      .then(resp =>{
+        if (resp) {//Si la imagen es apropiada cambiamos el estado para que se publique
+          this.actualizarEstadoPost(idPost, true)
+          return resp
+        }
+        //En caso de que la imagen no sea  apropiada le mandamos un mensaje al usuario
+        return this.enviarNotRespImagenInapropiada(idPost)
+      })
+  }
+  
+  //Utilizamos este metodo para validar que resultado tiene la imagen
   esAdecuada (resultado) {
     return (
       resultado !== 'POSSIBLE' &&
