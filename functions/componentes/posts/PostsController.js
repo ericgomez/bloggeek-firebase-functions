@@ -22,6 +22,21 @@ exports.auditoriaPostController = (dataSnapshot, context) => {
 
 exports.validarImagenPostController = imagen => {
   
+  if (!imagen.name.match(/imgsposts/)) {
+    return null
+  } 
+
+  if (!imagen.contextType.startsWith('image/')) {
+    console.error("El archivo no es una imagen")
+    return null
+  }
+
+  const posts = new Posts()
+
+  return posts.validarImagenPost(imagen).catch(error => {
+    console.error('${error}')
+  })
+
 }
 
 exports.enviarPostsSemana = (req, resp, next) => {
