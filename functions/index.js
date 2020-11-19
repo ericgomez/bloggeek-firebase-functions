@@ -15,7 +15,7 @@ admin.firestore().settings({ timestampsInSnapshots: true })
 // firebase functions:config:set configuration.accountsidtwilio="XXXX"
 // firebase functions:config:set configuration.authtokentwilio="XXXX"
 
-//****** Activamos las funciones *****
+//****** Activamos las funciones como disparadores *****
 exports.creacionUsuario = functions.auth
   .user()
   .onCreate(usuarioController.usuarioCreacionController)
@@ -27,3 +27,11 @@ exports.eliminacionUsuario = functions.auth
 exports.creacionUsuarioCRM = functions.auth
   .user()
   .onCreate(usuarioController.creacionUsuarioCRM)
+
+exports.registrarTopico = functions.firestore
+  .document('/tokens/{id}')
+  .onCreate(notificacionController.creacionTokenController)
+
+exports.enviarNotificacion = functions.firestore
+  .document('posts/{idPost}')
+  .onUpdate(postsController.actualizacionPostController)
