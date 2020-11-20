@@ -102,7 +102,7 @@ class Posts {
     const fechaFin = new Date()
     const fechaInicial = new Date()
     fechaInicial.setDate(fechaFin.getDate() - 5)
-    let emails = ""
+    let emails = ''
 
     return admin
       .firestore()
@@ -110,7 +110,7 @@ class Posts {
       .get()
       .then(emailsusuarios => {
         emailsusuarios.forEach(emailUsuario => {
-          emails += '${emailUsuario.data().email}'
+          emails += '${emailUsuario.data().email},'
         })
         return emails
       })

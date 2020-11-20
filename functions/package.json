@@ -20,5 +20,7 @@
     "eslint": "^4.12.0",
     "eslint-plugin-promise": "^3.6.0"
   },
+  "engines": { "node": "10" },
+  "hosting": { "port": 6000 },
   "private": true
 }

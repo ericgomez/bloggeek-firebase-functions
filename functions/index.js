@@ -8,7 +8,7 @@ const analiticasController = require('./componentes/analiticas/AnaliticasControl
 const express = require('express')
 const cors = require('cors')
 
-const app = express
+const app = express()
 app.use(cors())
 
 admin.initializeApp()
@@ -70,3 +70,8 @@ exports.validarImagen = functions.storage
   .onFinalize(postsController.validarImagenPostController)
 
 exports.enviarPostSemana = functions.https.onRequest()
+
+//Creación de las cloud functions de Crashlytics
+exports.nuevoErrorApp = functions.crashlytics
+  .issue()
+  .onNew(errorController.handler)
