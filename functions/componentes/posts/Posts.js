@@ -7,6 +7,7 @@ const vision = require('@google-cloud/vision')
 const { Email } = require('./../utilidad/EmailHelper.js')
 const plantillas = require('./../utilidad/PlantillasEmail.js')
 const { Notificaciones } = require('./../notificaciones/Notificaciones.js')
+const { post } = require('request')
 
 class Posts {
   registrarAuditoria (idPost, nuevoPost, viejoPost) {
@@ -98,7 +99,47 @@ class Posts {
   }
 
   enviarPostSemana (topicoNotificacion) {
-    
+    const fechaFin = new Date()
+    const fechaInicial = new Date()
+    fechaInicial.setDate(fechaFin.getDate() - 5)
+    let emails = ""
+
+    return admin
+      .firestore()
+      .collection('emailsusuarios')
+      .get()
+      .then(emailsusuarios => {
+        emailsusuarios.forEach(emailUsuarios => {
+          emails += '${emailUsuario.data().email}'
+        })
+        return emails
+      })
+      .then(() => {
+        return admin
+          .firestore()
+          .collection('posts')
+          .where('fecha', '>=', fechaInicial)
+          .where('fecha', '<=', fechaFin)
+          .where('publicado', '==', true)
+          .get()
+      })
+      .then(posts => {
+        //Si el post es diferente de vacio
+        if (!posts.empty) {
+          const textHtml = plantillas.plantillaVideosLaSemana(posts)
+          const objEmail = new Email()
+
+          return objEmail.sendEmail(
+            'info@blogeek.co',
+            emails,
+            "",
+            "Video Blogeek - Los videos geek de la semana",
+            textHtml
+          )
+        }
+        //En caso de que no exista un post retornamos un null
+        return null
+      })
   }
 }
 
