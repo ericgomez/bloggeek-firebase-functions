@@ -75,3 +75,8 @@ exports.enviarPostSemana = functions.https.onRequest()
 exports.nuevoErrorApp = functions.crashlytics
   .issue()
   .onNew(errorController.handler)
+
+  //Creación de las cloud functions cuando se registra un evento en las analíticas de Firebase
+  exports.analiticaCompartir = functions.analytics
+    .event('share')
+    .onLog(analiticasController.enviarCuponCompartir)
